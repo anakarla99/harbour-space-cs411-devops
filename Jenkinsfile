@@ -31,7 +31,6 @@ pipeline {
         }
 
         stage('Deploy') {
-            agent any
             steps {
                sh """
                     ssh -o StrictHostKeyChecking=no laborant@docker \
