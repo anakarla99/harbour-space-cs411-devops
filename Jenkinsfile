@@ -5,12 +5,37 @@ pipeline {
        go "1.24.1"
     }
 
+    environment {
+        IMAGE = "ttl.sh/anakarla99-harbour:2h"
+    }
+
     stages {
         stage('Build') {
             steps {
                 dir('app') {
                     sh "CGO_ENABLED=0 go build -o main main.go"
                 }
+            }
+        }
+
+        stage('Docker Build') {
+            steps {
+                sh "docker build -t ${IMAGE} ."
+            }
+        }
+
+        stage('Docker Push') {
+            steps {
+                sh "docker push ${IMAGE}"
+            }
+        }
+
+        stage('Deploy') {
+            agent { label 'docker' }
+            steps {
+                sh "docker pull ${IMAGE}"
+                sh "docker rm -f myapp || true"
+                sh "docker run -d --name myapp -p 4444:4444 ${IMAGE}"
             }
         }
     }
