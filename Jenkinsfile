@@ -33,9 +33,12 @@ pipeline {
         stage('Deploy') {
             agent any
             steps {
-                sh "docker pull ${IMAGE}"
-                sh "docker rm -f myapp || true"
-                sh "docker run -d --name myapp -p 4444:4444 ${IMAGE}"
+                sh """
+                    ssh -o StrictHostKeyChecking=no laborant@docker \
+                    'docker pull ${IMAGE} && \
+                     docker rm -f myapp || true ; \
+                     docker run -d --name myapp -p 4444:4444 ${IMAGE}'
+                """
             }
         }
     }
