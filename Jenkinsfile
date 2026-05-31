@@ -9,7 +9,7 @@ pipeline {
         stage('Build') {
             steps {
                 dir('app') {
-                    sh "CGO_ENABLED=0 go build -o main ."
+                    sh "CGO_ENABLED=0 go build -o main main.go"
                 }
             }
         }
