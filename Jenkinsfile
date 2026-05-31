@@ -33,7 +33,7 @@ pipeline {
         stage('Deploy') {
             agent any
             steps {
-                sh """
+               sh """
                     ssh -o StrictHostKeyChecking=no laborant@docker \
                     'docker pull ${IMAGE} && \
                      docker rm -f myapp || true ; \
