@@ -31,7 +31,7 @@ pipeline {
         }
 
         stage('Deploy') {
-            agent { label 'docker' }
+            agent any
             steps {
                 sh "docker pull ${IMAGE}"
                 sh "docker rm -f myapp || true"
