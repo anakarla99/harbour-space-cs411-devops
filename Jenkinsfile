@@ -47,7 +47,7 @@ pipeline {
 
                         kubectl config use-context lab-ctx
 
-                        kubectl apply -f pod.yaml
+                        kubectl apply -f pod.yaml --validate=false
                     """
                 }
             }
