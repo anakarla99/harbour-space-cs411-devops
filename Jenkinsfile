@@ -34,20 +34,11 @@ pipeline {
             steps {
                 withCredentials([string(credentialsId: 'k8s-token', variable: 'K8S_TOKEN')]) {
                     sh """
-                        kubectl config set-cluster lab-cluster \
-                            --server=https://kubernetes:6443 \
-                            --insecure-skip-tls-verify=true
-
-                        kubectl config set-credentials jenkins-robot \
-                            --token=\$K8S_TOKEN
-
-                        kubectl config set-context lab-ctx \
-                            --cluster=lab-cluster \
-                            --user=jenkins-robot
-
-                        kubectl config use-context lab-ctx
-
-                        kubectl apply -f pod.yaml --validate=false
+                        kubectl apply -f pod.yaml \
+                        --validate=false \
+                        --server=https://kubernetes:6443 \
+                        --token=\$K8S_TOKEN \
+                        --insecure-skip-tls-verify=true
                     """
                 }
             }
