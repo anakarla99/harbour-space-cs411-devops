@@ -30,14 +30,37 @@ pipeline {
             }
         }
 
-        stage('Deploy') {
+        stage('Deploy to Kubernetes') {
             steps {
-               sh """
-                    ssh -o StrictHostKeyChecking=no laborant@docker \
-                    'docker pull ${IMAGE} && \
-                     docker rm -f myapp || true ; \
-                     docker run -d --name myapp -p 4444:4444 ${IMAGE}'
-                """
+                withCredentials([string(credentialsId: 'k8s-token', variable: 'K8S_TOKEN')]) {
+                    sh """
+                        kubectl config set-cluster lab-cluster \
+                            --server=https://kubernetes:6443 \
+                            --insecure-skip-tls-verify=true
+
+                        kubectl config set-credentials jenkins-robot \
+                            --token=\$K8S_TOKEN
+
+                        kubectl config set-context lab-ctx \
+                            --cluster=lab-cluster \
+                            --user=jenkins-robot
+
+                        kubectl config use-context lab-ctx
+
+                        kubectl apply -f pod.yaml
+                    """
+                }
+            }
+        }
+        stage('Verify') {
+            steps {
+                withCredentials([string(credentialsId: 'k8s-token', variable: 'K8S_TOKEN')]) {
+                    sh """
+                        kubectl config use-context lab-ctx
+                        kubectl wait --for=condition=Ready pod/myapp --timeout=90s
+                        kubectl get pod myapp -o wide
+                    """
+                }
             }
         }
     }
