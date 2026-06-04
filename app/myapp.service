@@ -1,0 +1,10 @@
+[Unit]
+Description=My Go App
+
+[Service]
+ExecStart=/usr/local/bin/myapp
+Restart=on-failure
+User=myapp
+
+[Install]
+WantedBy=multi-user.target
