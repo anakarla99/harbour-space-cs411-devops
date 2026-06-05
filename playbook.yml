@@ -1,0 +1,39 @@
+- hosts: targets
+  tasks:
+    - name: Install Node.js 24
+      become: True
+      shell: |
+        curl -fsSL https://deb.nodesource.com/setup_24.x -o /tmp/nodesource_setup.sh
+        bash /tmp/nodesource_setup.sh
+        apt-get install -y nodejs
+
+    - name: Copy index.js
+      copy:
+        src: index.js
+        dest: /home/laborant/index.js
+        mode: '0644'
+
+    - name: Copy package.json
+      copy:
+        src: package.json
+        dest: /home/laborant/package.json
+        mode: '0644'
+
+    - name: Install npm dependencies
+      shell: npm install
+      args:
+        chdir: /home/laborant
+
+    - name: Create a unit file
+      become: True
+      copy:
+        src: myapp.service
+        dest: /etc/systemd/system/myapp.service
+
+    - name: Enable and start myapp service
+      become: True
+      systemd:
+        name: myapp.service
+        daemon_reload: yes
+        enabled: yes
+        state: restarted
