@@ -1,9 +1,12 @@
 pipeline {
     agent any
+    tools {
+        nodejs 'NodeJS24'    // ← ESTA LÍNEA es la que falta
+    }
     environment {
         IMAGE_NAME = "ttl.sh/anakarla99-harbour:2h"
     }
-
+    
     stages {
         stage('Install Dependencies') {
             steps {
